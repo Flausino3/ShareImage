@@ -50,12 +50,19 @@ public class MainActivity extends AppCompatActivity {
                         if (intent != null) {
                             String novoTexto = intent.getStringExtra(NovoTextoActivity.EXTRA_NOVO_TEXTO);
                             String novaCor = intent.getStringExtra(NovoTextoActivity.EXTRA_NOVA_COR);
+                            String novoTamanho = intent.getStringExtra(NovoTextoActivity.EXTRA_NOVO_TAMANHO);
+
                             if (novaCor == null) {
-                                Toast.makeText(MainActivity.this, "Cor desconhecida. Usando preto no lugar.", Toast.LENGTH_SHORT).show();
-                                novaCor = "BLACK";
+                                novaCor = "Preto";
                             }
+
+                            if (novoTamanho == null) {
+                                novoTamanho = "15";
+                            }
+
                             memeCreator.setTexto(novoTexto);
-                            memeCreator.setCorTexto(Color.parseColor(novaCor.toUpperCase()));
+                            memeCreator.setCorTexto(converterCor(novaCor));
+                            memeCreator.setTamanhoTexto(Integer.parseInt(novoTamanho));
                             mostrarImagem();
                         }
                     }
@@ -116,21 +123,36 @@ public class MainActivity extends AppCompatActivity {
     public void iniciarMudarTexto(View v) {
         Intent intent = new Intent(this, NovoTextoActivity.class);
         intent.putExtra(NovoTextoActivity.EXTRA_TEXTO_ATUAL, memeCreator.getTexto());
-        intent.putExtra(NovoTextoActivity.EXTRA_COR_ATUAL, converterCor(memeCreator.getCorTexto()));
+        intent.putExtra(NovoTextoActivity.EXTRA_COR_ATUAL, converterCorParaString(memeCreator.getCorTexto()));
 
         startNovoTexto.launch(intent);
     }
 
-    public String converterCor(int cor) {
+    // converte nome em português para Color
+    public int converterCor(String cor) {
         switch (cor) {
-            case Color.BLACK: return "BLACK";
-            case Color.WHITE: return "WHITE";
-            case Color.BLUE: return "BLUE";
-            case Color.GREEN: return "GREEN";
-            case Color.RED: return "RED";
-            case Color.YELLOW: return "YELLOW";
+            case "Preto": return Color.BLACK;
+            case "Branco": return Color.WHITE;
+            case "Azul": return Color.BLUE;
+            case "Verde": return Color.GREEN;
+            case "Vermelho": return Color.RED;
+            case "Amarelo": return Color.YELLOW;
         }
-        return null;
+        return Color.BLACK;
+    }
+
+    // converte Color para nome em português
+
+    public String converterCorParaString(int cor) {
+        switch (cor) {
+            case Color.BLACK: return "Preto";
+            case Color.WHITE: return "Branco";
+            case Color.BLUE: return "Azul";
+            case Color.GREEN: return "Verde";
+            case Color.RED: return "Vermelho";
+            case Color.YELLOW: return "Amarelo";
+        }
+        return "Preto";
     }
 
     public void iniciarMudarFundo(View v) {
@@ -177,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
         try (
                 ParcelFileDescriptor pfd = getContentResolver().openFileDescriptor(imageUri, "w");
                 FileOutputStream fos = new FileOutputStream(pfd.getFileDescriptor())
-            ) {
+        ) {
             BufferedOutputStream bytes = new BufferedOutputStream(fos);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
         } catch (IOException e) {

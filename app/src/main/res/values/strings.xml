@@ -7,6 +7,7 @@
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 
+
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
         volutpat, dolor id interdum ullamcorper, risus dolor egestas lectus, sit amet mattis purus
@@ -51,4 +52,5 @@
     <string name="salvar">Salvar</string>
     <string name="cor_do_texto">Cor do texto</string>
     <string name="meme_gerado">Meme gerado</string>
+    <string name="tamanho_fonte">Tamanho da Fonte</string>
 </resources>
