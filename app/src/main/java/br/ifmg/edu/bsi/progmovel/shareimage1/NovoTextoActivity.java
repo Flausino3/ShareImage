@@ -40,7 +40,7 @@ public class NovoTextoActivity extends AppCompatActivity {
         RadioGroup radioGroupPosicao = findViewById(R.id.radioGroupPosicao);
 
         // Spinners com opções de tamanho e cores
-        String[] tamanhos = {"10", "15", "20", "50", "80", "95", "120", "140"};
+        String[] tamanhos = {"40", "45", "50", "55", "80", "95", "120", "140"};
         ArrayAdapter adapterTamanho = new ArrayAdapter(this, android.R.layout.simple_spinner_item, tamanhos);
         spinnerTamanho.setAdapter(adapterTamanho);
 

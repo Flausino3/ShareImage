@@ -2,6 +2,7 @@ package br.ifmg.edu.bsi.progmovel.shareimage1;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,6 +15,10 @@ import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -119,10 +124,76 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
+    private class TemplateAdapter extends BaseAdapter {
+        private int[] templates = {
+                R.drawable.template1,
+                R.drawable.template2,
+                R.drawable.template3,
+                R.drawable.template4,
+                R.drawable.template5,
+                R.drawable.template6,
+                R.drawable.template7,
+                R.drawable.template8
+        };
+
+        @Override
+        public int getCount() {
+            return templates.length;
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return templates[position];
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ImageView imageView;
+            if (convertView == null) {
+                imageView = new ImageView(MainActivity.this);
+                imageView.setLayoutParams(new GridView.LayoutParams(250, 250));
+                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                imageView.setPadding(8, 8, 8, 8);
+            } else {
+                imageView = (ImageView) convertView;
+            }
+            imageView.setImageResource(templates[position]);
+            return imageView;
+        }
+    }
+
+    private void abrirSeletorTemplates() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Escolha um Template");
+
+        GridView gridView = new GridView(this);
+        gridView.setNumColumns(2);
+        gridView.setAdapter(new TemplateAdapter());
+
+        builder.setView(gridView);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+
+        gridView.setOnItemClickListener((parent, view, position, id) -> {
+            int templateId = ((Integer) parent.getAdapter().getItem(position));
+            Bitmap templateBitmap = BitmapFactory.decodeResource(getResources(), templateId);
+            memeCreator.setFundo(templateBitmap);
+            mostrarImagem();
+            alertDialog.dismiss();
+        });
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Button btnTemplates = findViewById(R.id.btnTemplates);
+        btnTemplates.setOnClickListener(v -> abrirSeletorTemplates());
         imageView = findViewById(R.id.imageView);
 
         Bitmap imagemFundo = BitmapFactory.decodeResource(getResources(), R.drawable.fry_meme);
