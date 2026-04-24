@@ -24,6 +24,7 @@ public class NovoTextoActivity extends AppCompatActivity {
     public static final String EXTRA_NOVO_TEXTO_TOPO = "novoTextoTopo";
     public static final String EXTRA_NOVA_COR_TOPO = "novaCorTopo";
     public static final String EXTRA_NOVO_TAMANHO_TOPO = "novoTamanhoTopo";
+    public static final String EXTRA_POSICAO_ESCOLHIDA = "posicaoEscolhida";
 
     private EditText etTexto;
     private Spinner spinnerTamanho;
@@ -40,7 +41,7 @@ public class NovoTextoActivity extends AppCompatActivity {
         RadioGroup radioGroupPosicao = findViewById(R.id.radioGroupPosicao);
 
         // Spinners com opções de tamanho e cores
-        String[] tamanhos = {"40", "45", "50", "55", "80", "95", "120", "140"};
+        String[] tamanhos = {"25", "30", "45", "55", "80", "95", "120", "140"};
         ArrayAdapter adapterTamanho = new ArrayAdapter(this, android.R.layout.simple_spinner_item, tamanhos);
         spinnerTamanho.setAdapter(adapterTamanho);
 
@@ -92,6 +93,7 @@ public class NovoTextoActivity extends AppCompatActivity {
         }
 
         setResult(RESULT_OK, intent);
+        intent.putExtra(EXTRA_POSICAO_ESCOLHIDA, editandoTopo ? "topo" : "baixo");
         finish();
     }
 }

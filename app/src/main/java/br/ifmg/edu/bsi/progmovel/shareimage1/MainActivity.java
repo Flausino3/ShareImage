@@ -1,6 +1,7 @@
 package br.ifmg.edu.bsi.progmovel.shareimage1;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentValues;
@@ -14,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -46,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageView imageView;
     private MemeCreator memeCreator;
+    private String textoSelecionado = null;
     private final ActivityResultLauncher<Intent> startNovoTexto = registerForActivityResult(new StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
                 @Override
@@ -80,10 +83,19 @@ public class MainActivity extends AppCompatActivity {
                             memeCreator.setCorTexto(converterCor(novaCor));
                             memeCreator.setTamanhoTexto(Integer.parseInt(novoTamanho));
                             mostrarImagem();
+                            textoSelecionado = intent.getStringExtra(NovoTextoActivity.EXTRA_POSICAO_ESCOLHIDA);
+                            if (textoSelecionado != null) {
+                                exibirMensagem("Toque na tela para reposicionar o texto!");
+                            }
+
                         }
                     }
                 }
             });
+
+    private void exibirMensagem(String mensagem) {
+        Toast.makeText(this, mensagem, Toast.LENGTH_SHORT).show();
+    }
 
     private final ActivityResultLauncher<PickVisualMediaRequest> startImagemFundo = registerForActivityResult(new PickVisualMedia(),
             new ActivityResultCallback<Uri>() {
@@ -188,6 +200,34 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @SuppressLint("ClickableViewAccessibility")
+    private void configurarTouchListener() {
+        imageView.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    v.performClick();
+                }
+
+                if (textoSelecionado != null) {
+                    float posX = event.getX() / imageView.getWidth();
+                    float posY = event.getY() / imageView.getHeight();
+
+                    if (textoSelecionado.equals("topo")) {
+                        memeCreator.setPosicaoTopo(posX, posY);
+                    } else {
+                        memeCreator.setPosicaoBaixo(posX, posY);
+                    }
+
+                    mostrarImagem();
+                    textoSelecionado = null;
+                    exibirMensagem("Posição atualizada!");
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -195,6 +235,12 @@ public class MainActivity extends AppCompatActivity {
         Button btnTemplates = findViewById(R.id.btnTemplates);
         btnTemplates.setOnClickListener(v -> abrirSeletorTemplates());
         imageView = findViewById(R.id.imageView);
+
+        configurarTouchListener();
+
+        imageView.setOnClickListener(v -> {
+            // vazio, só pra satisfazer o aviso
+        });
 
         Bitmap imagemFundo = BitmapFactory.decodeResource(getResources(), R.drawable.fry_meme);
 
@@ -227,7 +273,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // converte Color para nome em português
-
     public String converterCorParaString(int cor) {
         switch (cor) {
             case Color.BLACK: return "Preto";

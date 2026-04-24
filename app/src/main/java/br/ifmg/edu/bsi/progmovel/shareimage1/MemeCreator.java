@@ -23,6 +23,10 @@ public class MemeCreator {
     private String textoTopo;
     private int corTextoTopo;
     private float tamanhoTextoTopo;
+    private float posicaoXTopo;
+    private float posicaoYTopo;
+    private float posicaoXBaixo;
+    private float posicaoYBaixo;
     public MemeCreator(String texto, int corTexto, Bitmap fundo, DisplayMetrics displayMetrics) {
         this.texto = texto;
         this.corTexto = corTexto;
@@ -32,6 +36,10 @@ public class MemeCreator {
         this.textoTopo = ""; // texto vazio no início
         this.corTextoTopo = corTexto;
         this.tamanhoTextoTopo = 64.f;
+        this.posicaoXTopo = 0.5f;
+        this.posicaoYTopo = 0.1f;
+        this.posicaoXBaixo = 0.5f;
+        this.posicaoYBaixo = 0.9f;
         this.meme = criarImagem();
         this.dirty = false;
     }
@@ -91,6 +99,18 @@ public class MemeCreator {
         dirty = true;
     }
 
+    public void setPosicaoTopo(float x, float y) {
+        this.posicaoXTopo = x;
+        this.posicaoYTopo = y;
+        dirty = true;
+    }
+
+    public void setPosicaoBaixo(float x, float y) {
+        this.posicaoXBaixo = x;
+        this.posicaoYBaixo = y;
+        dirty = true;
+    }
+
     public void rotacionarFundo(float graus) {
         Matrix matrix = new Matrix();
         matrix.postRotate(graus);
@@ -132,14 +152,14 @@ public class MemeCreator {
         if (textoTopo != null && !textoTopo.isEmpty()) {
             paint.setColor(corTextoTopo);
             paint.setTextSize(tamanhoTextoTopo);
-            canvas.drawText(textoTopo, (width / 2.f), (height * 0.1f), paint);
+            canvas.drawText(textoTopo, (width * posicaoXTopo), (height * posicaoYTopo), paint);
         }
 
         // desenhar texto embaixo
         if (texto != null && !texto.isEmpty()) {
             paint.setColor(corTexto);
             paint.setTextSize(tamanhoTexto);
-            canvas.drawText(texto, (width / 2.f), (height * 0.9f), paint);
+            canvas.drawText(texto, (width * posicaoXBaixo), (height * posicaoYBaixo), paint);
         }
         return bitmap;
     }
