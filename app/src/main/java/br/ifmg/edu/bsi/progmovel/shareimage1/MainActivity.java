@@ -52,6 +52,17 @@ public class MainActivity extends AppCompatActivity {
                             String novaCor = intent.getStringExtra(NovoTextoActivity.EXTRA_NOVA_COR);
                             String novoTamanho = intent.getStringExtra(NovoTextoActivity.EXTRA_NOVO_TAMANHO);
 
+                            String novoTextoTopo = intent.getStringExtra(NovoTextoActivity.EXTRA_NOVO_TEXTO_TOPO);
+                            String novaCorTopo = intent.getStringExtra(NovoTextoActivity.EXTRA_NOVA_COR_TOPO);
+                            String novoTamanhoTopo = intent.getStringExtra(NovoTextoActivity.EXTRA_NOVO_TAMANHO_TOPO);
+
+                            // Aplicar texto de cima
+                            if (novoTextoTopo != null && novaCorTopo != null && novoTamanhoTopo != null) {
+                                memeCreator.setTextoTopo(novoTextoTopo);
+                                memeCreator.setCorTextoTopo(converterCor(novaCorTopo));
+                                memeCreator.setTamanhoTextoTopo(Integer.parseInt(novoTamanhoTopo));
+                            }
+
                             if (novaCor == null) {
                                 novaCor = "Preto";
                             }
@@ -124,6 +135,9 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, NovoTextoActivity.class);
         intent.putExtra(NovoTextoActivity.EXTRA_TEXTO_ATUAL, memeCreator.getTexto());
         intent.putExtra(NovoTextoActivity.EXTRA_COR_ATUAL, converterCorParaString(memeCreator.getCorTexto()));
+
+        intent.putExtra(NovoTextoActivity.EXTRA_TEXTO_TOPO_ATUAL, memeCreator.getTextoTopo());
+        intent.putExtra(NovoTextoActivity.EXTRA_COR_TOPO_ATUAL, converterCorParaString(memeCreator.getCorTextoTopo()));
 
         startNovoTexto.launch(intent);
     }

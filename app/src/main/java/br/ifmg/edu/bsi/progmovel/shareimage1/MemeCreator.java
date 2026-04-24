@@ -20,15 +20,43 @@ public class MemeCreator {
     private Bitmap meme;
     private boolean dirty; // se true, significa que o meme precisa ser recriado.
     private float tamanhoTexto; // novo atributo para tamanho
-
+    private String textoTopo;
+    private int corTextoTopo;
+    private float tamanhoTextoTopo;
     public MemeCreator(String texto, int corTexto, Bitmap fundo, DisplayMetrics displayMetrics) {
         this.texto = texto;
         this.corTexto = corTexto;
         this.fundo = fundo;
         this.displayMetrics = displayMetrics;
         this.tamanhoTexto = 64.f;
+        this.textoTopo = ""; // texto vazio no início
+        this.corTextoTopo = corTexto;
+        this.tamanhoTextoTopo = 64.f;
         this.meme = criarImagem();
         this.dirty = false;
+    }
+
+    public String getTextoTopo() {
+        return textoTopo;
+    }
+
+    public void setTextoTopo(String textoTopo) {
+        this.textoTopo = textoTopo;
+        dirty = true;
+    }
+
+    public int getCorTextoTopo() {
+        return corTextoTopo;
+    }
+
+    public void setCorTextoTopo(int corTextoTopo) {
+        this.corTextoTopo = corTextoTopo;
+        dirty = true;
+    }
+
+    public void setTamanhoTextoTopo(int tamanho) {
+        this.tamanhoTextoTopo = (float) tamanho;
+        dirty = true;
     }
 
     public String getTexto() {
@@ -100,8 +128,19 @@ public class MemeCreator {
         paint.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD));
         paint.setTextAlign(Paint.Align.CENTER);
 
+        // desenhar texto de cima
+        if (textoTopo != null && !textoTopo.isEmpty()) {
+            paint.setColor(corTextoTopo);
+            paint.setTextSize(tamanhoTextoTopo);
+            canvas.drawText(textoTopo, (width / 2.f), (height * 0.1f), paint);
+        }
+
         // desenhar texto embaixo
-        canvas.drawText(texto, (width / 2.f), (height * 0.9f), paint);
+        if (texto != null && !texto.isEmpty()) {
+            paint.setColor(corTexto);
+            paint.setTextSize(tamanhoTexto);
+            canvas.drawText(texto, (width / 2.f), (height * 0.9f), paint);
+        }
         return bitmap;
     }
 }
