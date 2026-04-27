@@ -83,22 +83,22 @@ public class FiltrosImagemUtil {
         return resultado;
     }
 
-    // Adiciona uma borda preta simples ao redor da imagem.
+    // Adiciona uma moldura preta visível ao redor da imagem.
+    // Cria um novo bitmap maior e desenha a imagem original centralizada dentro dele.
     public static Bitmap aplicarBorda(Bitmap imagem) {
-        int espessura = 20; // espessura da borda em pixels
-        Bitmap resultado = Bitmap.createBitmap(imagem.getWidth(), imagem.getHeight(), Bitmap.Config.ARGB_8888);
+        int espessura = 40; // espessura da moldura em pixels (quanto maior, mais visível)
+
+        // Novo bitmap com espaço extra para a moldura em todos os lados
+        int novaLargura = imagem.getWidth() + espessura * 2;
+        int novaAltura = imagem.getHeight() + espessura * 2;
+        Bitmap resultado = Bitmap.createBitmap(novaLargura, novaAltura, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(resultado);
 
-        // Desenha a imagem original
-        canvas.drawBitmap(imagem, 0, 0, null);
+        // Preenche o fundo inteiro de preto (isso forma a moldura)
+        canvas.drawColor(Color.BLACK);
 
-        // Desenha a borda insetada pela metade da espessura para que fique totalmente visível dentro do bitmap
-        Paint paint = new Paint();
-        paint.setColor(Color.BLACK);
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(espessura);
-        float metade = espessura / 2f;
-        canvas.drawRect(metade, metade, imagem.getWidth() - metade, imagem.getHeight() - metade, paint);
+        // Desenha a imagem original deslocada para dentro, deixando a borda preta visível
+        canvas.drawBitmap(imagem, espessura, espessura, null);
 
         return resultado;
     }
