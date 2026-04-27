@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, mensagem, Toast.LENGTH_SHORT).show();
     }
 
-    // Após o usuário escolher uma imagem, abre a FiltrosActivity para aplicar um filtro antes de usar como fundo.
+    // Após o usuário escolher uma imagem da galeria, aplica diretamente como fundo do meme.
     private final ActivityResultLauncher<PickVisualMediaRequest> startImagemFundo = registerForActivityResult(new PickVisualMedia(),
             new ActivityResultCallback<Uri>() {
                 @Override
@@ -119,9 +119,9 @@ public class MainActivity extends AppCompatActivity {
                             imagemFundo = Bitmap.createBitmap(imagemFundo, 0, 0, imagemFundo.getWidth(), imagemFundo.getHeight(), matrix, true);
                         }
 
-                        // Passa a imagem para a FiltrosActivity via campo estático para evitar limite do Bundle
-                        FiltrosActivity.imagemEntrada = imagemFundo;
-                        startFiltros.launch(new Intent(MainActivity.this, FiltrosActivity.class));
+                        // Define a imagem escolhida como fundo do meme diretamente
+                        memeCreator.setFundo(imagemFundo);
+                        mostrarImagem();
                     } catch (IOException e) {
                         Toast.makeText(MainActivity.this, "Erro: " + e.getMessage(), Toast.LENGTH_LONG).show();
                         e.printStackTrace();
@@ -309,6 +309,17 @@ public class MainActivity extends AppCompatActivity {
         startImagemFundo.launch(new PickVisualMediaRequest.Builder()
                 .setMediaType(ImageOnly.INSTANCE)
                 .build());
+    }
+
+    // Abre a tela de filtros com a imagem atual do meme (seja padrão, template ou da galeria)
+    public void iniciarAplicarFiltros(View v) {
+        Bitmap fundoAtual = memeCreator.getFundo();
+        if (fundoAtual == null) {
+            exibirMensagem("Nenhuma imagem disponível para aplicar filtros.");
+            return;
+        }
+        FiltrosActivity.imagemEntrada = fundoAtual;
+        startFiltros.launch(new Intent(this, FiltrosActivity.class));
     }
 
     public void compartilhar(View v) {
