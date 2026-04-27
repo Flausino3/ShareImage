@@ -27,6 +27,13 @@ public class FiltrosActivity extends AppCompatActivity {
 
         imageViewPreview = findViewById(R.id.imageViewPreview);
 
+        // Verifica se uma imagem foi passada antes de continuar
+        if (imagemEntrada == null) {
+            setResult(Activity.RESULT_CANCELED);
+            finish();
+            return;
+        }
+
         // Começa mostrando a imagem sem nenhum filtro
         imagemAtual = imagemEntrada;
         imageViewPreview.setImageBitmap(imagemAtual);

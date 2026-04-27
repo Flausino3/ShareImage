@@ -92,12 +92,13 @@ public class FiltrosImagemUtil {
         // Desenha a imagem original
         canvas.drawBitmap(imagem, 0, 0, null);
 
-        // Desenha um retângulo vazado por cima, simulando a borda
+        // Desenha a borda insetada pela metade da espessura para que fique totalmente visível dentro do bitmap
         Paint paint = new Paint();
         paint.setColor(Color.BLACK);
         paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(espessura * 2); // dobro porque a metade fica fora do bitmap
-        canvas.drawRect(0, 0, imagem.getWidth(), imagem.getHeight(), paint);
+        paint.setStrokeWidth(espessura);
+        float metade = espessura / 2f;
+        canvas.drawRect(metade, metade, imagem.getWidth() - metade, imagem.getHeight() - metade, paint);
 
         return resultado;
     }

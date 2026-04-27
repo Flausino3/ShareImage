@@ -138,6 +138,9 @@ public class MainActivity extends AppCompatActivity {
                         memeCreator.setFundo(FiltrosActivity.imagemResultado);
                         mostrarImagem();
                     }
+                    // Limpa os campos estáticos para liberar memória
+                    FiltrosActivity.imagemEntrada = null;
+                    FiltrosActivity.imagemResultado = null;
                 }
             });
 
