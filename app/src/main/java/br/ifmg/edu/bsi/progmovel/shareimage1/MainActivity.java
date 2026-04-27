@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -97,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, mensagem, Toast.LENGTH_SHORT).show();
     }
 
+    // Após o usuário escolher uma imagem, abre a FiltrosActivity para aplicar um filtro antes de usar como fundo.
     private final ActivityResultLauncher<PickVisualMediaRequest> startImagemFundo = registerForActivityResult(new PickVisualMedia(),
             new ActivityResultCallback<Uri>() {
                 @Override
@@ -106,21 +108,39 @@ public class MainActivity extends AppCompatActivity {
                     }
                     try (ParcelFileDescriptor pfd = getContentResolver().openFileDescriptor(result, "r")) {
                         Bitmap imagemFundo = MediaStore.Images.Media.getBitmap(MainActivity.this.getContentResolver(), result);
-                        memeCreator.setFundo(imagemFundo);
 
                         // descobrir se é preciso rotacionar a imagem
                         FileDescriptor fd = pfd.getFileDescriptor();
                         ExifInterface exif = new ExifInterface(fd);
                         int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
                         if (orientation == ExifInterface.ORIENTATION_ROTATE_90) {
-                            memeCreator.rotacionarFundo(90);
+                            Matrix matrix = new Matrix();
+                            matrix.postRotate(90);
+                            imagemFundo = Bitmap.createBitmap(imagemFundo, 0, 0, imagemFundo.getWidth(), imagemFundo.getHeight(), matrix, true);
                         }
 
-                        mostrarImagem();
+                        // Passa a imagem para a FiltrosActivity via campo estático para evitar limite do Bundle
+                        FiltrosActivity.imagemEntrada = imagemFundo;
+                        startFiltros.launch(new Intent(MainActivity.this, FiltrosActivity.class));
                     } catch (IOException e) {
                         Toast.makeText(MainActivity.this, "Erro: " + e.getMessage(), Toast.LENGTH_LONG).show();
                         e.printStackTrace();
                     }
+                }
+            });
+
+    // Recebe a imagem de volta da FiltrosActivity (com ou sem filtro aplicado) e usa como fundo do meme.
+    private final ActivityResultLauncher<Intent> startFiltros = registerForActivityResult(new StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK && FiltrosActivity.imagemResultado != null) {
+                        memeCreator.setFundo(FiltrosActivity.imagemResultado);
+                        mostrarImagem();
+                    }
+                    // Limpa os campos estáticos para liberar memória
+                    FiltrosActivity.imagemEntrada = null;
+                    FiltrosActivity.imagemResultado = null;
                 }
             });
 
